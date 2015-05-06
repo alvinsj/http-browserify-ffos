@@ -34,7 +34,7 @@ http.request = function (params, cb) {
     }
     if (!params.port) params.port = params.protocol == 'https:' ? 443 : 80;
     
-    var req = new Request(new xhrHttp, params);
+    var req = new Request(new xhrHttp({mozSystem: true}), params);
     if (cb) req.on('response', cb);
     return req;
 };
@@ -55,30 +55,6 @@ var xhrHttp = (function () {
     }
     else if (window.XMLHttpRequest) {
         return window.XMLHttpRequest;
-    }
-    else if (window.ActiveXObject) {
-        var axs = [
-            'Msxml2.XMLHTTP.6.0',
-            'Msxml2.XMLHTTP.3.0',
-            'Microsoft.XMLHTTP'
-        ];
-        for (var i = 0; i < axs.length; i++) {
-            try {
-                var ax = new(window.ActiveXObject)(axs[i]);
-                return function () {
-                    if (ax) {
-                        var ax_ = ax;
-                        ax = null;
-                        return ax_;
-                    }
-                    else {
-                        return new(window.ActiveXObject)(axs[i]);
-                    }
-                };
-            }
-            catch (e) {}
-        }
-        throw new Error('ajax not supported in this browser')
     }
     else {
         throw new Error('ajax not supported in this browser');
